@@ -1,16 +1,15 @@
 import Register from './pages/register'
-import Monitor from './pages/monitor'
 import Rules from './pages/rules'
 import Statistics from './pages/statistics'
 
 const routes = [
   {
-    path: '/register',
-    component: Register
+    path: '/',
+    redirect: '/register'
   },
   {
-    path: '/monitor',
-    component: Monitor
+    path: '/register',
+    component: Register
   },
   {
     path: '/rules',
@@ -19,6 +18,10 @@ const routes = [
   {
     path: '/statistics',
     component: Statistics
+  },
+  {
+    path: '*',
+    redirect: '/register'
   }
 ]
 
