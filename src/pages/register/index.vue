@@ -22,8 +22,8 @@
         <!-- <el-button @click="stop">停止</el-button> -->
         <!-- <el-button @click="photo">上传</el-button> -->
       </div>
-      <canvas id="liveCanvas"></canvas>
-      <canvas id="snapCanvas"></canvas>
+      <canvas id="liveCanvas" width="1280" height="720"></canvas>
+      <canvas id="snapCanvas" width="1280" height="720"></canvas>
     </el-col>
   </el-row>
 </template>
@@ -56,13 +56,13 @@ export default {
         })
     },
     handleClick() {
-      this.context.drawImage(this.video, 0, 0, 200, 150)
+      this.context.drawImage(this.video, 0, 0, 1280, 720, 0, 0, 1280, 720)
     },
     stop() {
       this.steam.getVideoTracks()[0].stop()
     },
     imgPick() {
-      this.snapContext.drawImage(this.video, 0, 0, 200, 150)
+      this.snapContext.drawImage(this.video, 0, 0, 1280, 720, 0, 0, 1280, 720)
       // send
       axios
         .post('http://127.0.0.1:8080/face/search', {
@@ -76,7 +76,7 @@ export default {
   mounted() {
     this.context = document.querySelector('#liveCanvas').getContext('2d')
     this.snapContext = document.querySelector('#snapCanvas').getContext('2d')
-    const constraints = { audio: false, video: true }
+    const constraints = { audio: false, video: { width: 1280, height: 720 } }
     navigator.mediaDevices.getUserMedia(constraints).then(mediaStream => {
       this.steam = mediaStream
       this.video = document.querySelector('video')
