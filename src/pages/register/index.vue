@@ -47,14 +47,11 @@ export default {
   },
   methods: {
     onSubmit() {
-      const img = document.querySelector('#liveCanvas').toDataURL()
-      const { name: jdPin, phone } = this.form
-      console.log({ img, jdPin, phone })
-      axios.post('abc.com', { img, jdPin }).then(res => {
+      const image = document.querySelector('#liveCanvas').toDataURL()
+      const { name: userId, phone } = this.form
+      axios.post('http://127.0.0.1:8080/face/register', { image, userId, phone }).then(res => {
         console.log(res)
       })
-      // send to backend
-      // do submit thing
     },
     handleClick() {
       this.context.drawImage(this.video, 0, 0, 200, 150)
