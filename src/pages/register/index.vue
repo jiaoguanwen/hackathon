@@ -49,9 +49,11 @@ export default {
     onSubmit() {
       const image = document.querySelector('#liveCanvas').toDataURL()
       const { name: userId, phone } = this.form
-      axios.post('http://127.0.0.1:8080/face/register', { image, userId, phone }).then(res => {
-        console.log(res)
-      })
+      axios
+        .post('http://127.0.0.1:8080/face/register', { image, userId, phone })
+        .then(res => {
+          console.log(res)
+        })
     },
     handleClick() {
       this.context.drawImage(this.video, 0, 0, 200, 150)
@@ -61,8 +63,14 @@ export default {
     },
     imgPick() {
       this.snapContext.drawImage(this.video, 0, 0, 200, 150)
-      console.log(document.querySelector('#snapCanvas').toDataURL())
       // send
+      axios
+        .post('http://127.0.0.1:8080/face/search', {
+          image: document.querySelector('#snapCanvas').toDataURL()
+        })
+        .then(res => {
+          console.log(res)
+        })
     }
   },
   mounted() {
