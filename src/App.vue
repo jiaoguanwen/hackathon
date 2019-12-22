@@ -1,7 +1,8 @@
 <template>
   <div id="app">
     <el-menu mode="horizontal" :default-active="activeIndex" router>
-      <el-menu-item index="/register">采集</el-menu-item>
+      <el-menu-item index="/register">注册</el-menu-item>
+      <el-menu-item index="/monitor">采集</el-menu-item>
       <el-menu-item index="/rules">规则</el-menu-item>
       <el-menu-item index="/statistics">统计</el-menu-item>
     </el-menu>

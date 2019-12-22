@@ -16,14 +16,16 @@
     </el-col>
     <el-col :span="16">
       <h2>图像采集</h2>
-      <video src></video>
+      <div class="video-wrapper">
+        <video src></video>
+        <div v-show="isShowCutboard" class="cutboard" :style="cutboardStyle"></div>
+      </div>
       <div class="button-wrapper">
         <el-button @click="handleClick">截图</el-button>
         <!-- <el-button @click="stop">停止</el-button> -->
         <!-- <el-button @click="photo">上传</el-button> -->
       </div>
       <canvas id="liveCanvas"></canvas>
-      <canvas id="snapCanvas"></canvas>
     </el-col>
   </el-row>
 </template>
@@ -37,11 +39,18 @@ export default {
     return {
       form: {
         name: '',
-        context: null,
-        steam: null,
-        video: null,
-        snapContext: null,
-        timer: null
+        phone: ''
+      },
+      context: null,
+      steam: null,
+      video: null,
+      timer: null,
+      isShowCutboard: false,
+      cutboardStyle: {
+        width: '50px',
+        height: '50px',
+        top: '50px',
+        left: '50px'
       }
     }
   },
@@ -60,22 +69,10 @@ export default {
     },
     stop() {
       this.steam.getVideoTracks()[0].stop()
-    },
-    imgPick() {
-      this.snapContext.drawImage(this.video, 0, 0, 200, 150)
-      // send
-      axios
-        .post('http://127.0.0.1:8080/face/search', {
-          image: document.querySelector('#snapCanvas').toDataURL()
-        })
-        .then(res => {
-          console.log(res)
-        })
     }
   },
   mounted() {
     this.context = document.querySelector('#liveCanvas').getContext('2d')
-    this.snapContext = document.querySelector('#snapCanvas').getContext('2d')
     const constraints = { audio: false, video: true }
     navigator.mediaDevices.getUserMedia(constraints).then(mediaStream => {
       this.steam = mediaStream
@@ -86,10 +83,8 @@ export default {
         self.video.play()
       }
     })
-    this.timer = setInterval(this.imgPick, 3000)
   },
   beforeDestroy() {
-    console.log('beforeDestory')
     this.context = null
     this.steam.getVideoTracks()[0].stop()
     this.steam = null
@@ -104,7 +99,13 @@ export default {
   margin-top: 7px;
   margin-bottom: 10px;
 }
-#snapCanvas {
-  visibility: hidden;
+.video-wrapper {
+  width: 640px;
+  height: 480px;
+  position: relative;
+  .cutboard {
+    position: absolute;
+    border: 1px solid green;
+  }
 }
 </style>
