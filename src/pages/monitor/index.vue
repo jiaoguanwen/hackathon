@@ -5,8 +5,9 @@
       <video src></video>
       <div v-show="isShowCutboard" class="cutboard" :style="cutboardStyle"></div>
     </div>
-    <canvas id="liveCanvas"></canvas>
-    <canvas id="snapCanvas"></canvas>
+    <canvas id="snapCanvas" width="200" height="113"></canvas>
+    <el-button @click="startSearch" type="primary">开始采集</el-button>
+    <el-button @click="stopSearch">停止采集</el-button>
   </div>
 </template>
 
@@ -17,7 +18,6 @@ export default {
   name: 'monitor',
   data() {
     return {
-      context: null,
       steam: null,
       video: null,
       snapContext: null,
@@ -28,16 +28,18 @@ export default {
         height: '',
         top: '',
         left: ''
-      }
+      },
+      snapCanvas: null
     }
   },
   methods: {
     imgPick() {
       this.snapContext.drawImage(this.video, 0, 0, 200, 113)
       // send
+      console.log(this.snapCanvas.toDataURL())
       axios
         .post('http://127.0.0.1:8080/face/search', {
-          image: document.querySelector('#snapCanvas').toDataURL()
+          image: this.snapCanvas.toDataURL()
         })
         .then(res => {
           if (Number(res.code) === 0 && res.data) {
@@ -53,11 +55,19 @@ export default {
             this.isShowCutboard = false
           }
         })
+    },
+    startSearch() {
+      this.imgPick()
+      this.timer = setInterval(this.imgPick, 3000)
+    },
+    stopSearch() {
+      clearInterval(this.timer)
+      this.isShowCutboard = false
     }
   },
   mounted() {
-    this.context = document.querySelector('#liveCanvas').getContext('2d')
-    this.snapContext = document.querySelector('#snapCanvas').getContext('2d')
+    this.snapCanvas = document.querySelector('#snapCanvas')
+    this.snapContext = this.snapCanvas.getContext('2d')
     const constraints = { audio: false, video: { width: 1280, height: 720 } }
     navigator.mediaDevices.getUserMedia(constraints).then(mediaStream => {
       this.steam = mediaStream
@@ -66,12 +76,10 @@ export default {
       const self = this
       this.video.onloadedmetadata = function() {
         self.video.play()
-        self.timer = setInterval(self.imgPick, 3000)
       }
     })
   },
   beforeDestroy() {
-    this.context = null
     this.steam.getVideoTracks()[0].stop()
     this.steam = null
     this.video = null
