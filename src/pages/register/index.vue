@@ -2,7 +2,7 @@
   <el-row :gutter="20">
     <el-col :span="8">
       <h2>信息录入</h2>
-      <el-form :model="form" @submit.native.prevent label-position="top">
+      <el-form :model="form" @submit.native.prevent label-position="top" ref="formRef">
         <el-form-item label="京东用户名">
           <el-input v-model="form.name"></el-input>
         </el-form-item>
@@ -61,7 +61,12 @@ export default {
       axios
         .post('http://127.0.0.1:8080/face/register', { image, userId, phone })
         .then(res => {
-          console.log(res)
+          if (Number(res.code) === 0) {
+            this.$message.success('注册成功')
+          } else {
+            this.$message.erroe('注册失败，请重试')
+          }
+          this.$refs.formRef.resetFields()
         })
     },
     handleClick() {
